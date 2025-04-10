@@ -8,6 +8,7 @@ class AppColors {
   static const loadColor = Color.fromRGBO(255, 204, 0, 1);
 
   static const yellowTextColor = Color.fromRGBO(216, 183, 74, 1);
+  static const blueTextColor = Color.fromRGBO(0, 122, 255, 1);
 
   static const disableButtonStyle = Color.fromRGBO(216, 183, 74, 0.3);
   static const activeButtonStyle = Color.fromRGBO(216, 183, 74, 1);

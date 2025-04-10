@@ -1,5 +1,8 @@
 import 'package:dogecoin/presentation/load_screen/view/load_screen.dart';
+import 'package:dogecoin/presentation/main_screen/view/main_screen.dart';
+import 'package:dogecoin/presentation/new_wallet/view/finally_screen.dart';
 import 'package:dogecoin/presentation/new_wallet/view/new_wallet.dart';
+import 'package:dogecoin/presentation/new_wallet/view/secret_phrase.dart';
 import 'package:dogecoin/presentation/recover_wallet/view/recover_wallet.dart';
 import 'package:dogecoin/presentation/welcome_screen/view/welcome_screen.dart';
 import 'package:dogecoin/presentation/registration_screen/view/registration_scree.dart';
@@ -18,13 +21,16 @@ class DogecoinApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: themeData,
-      initialRoute: '/welcome',
+      initialRoute: '/main',
       routes: {
         '/load': (context) => LoadScreen(),
         '/welcome': (context) => WelcomeScreen(),
         '/register': (context) => RegistrationScreen(),
         '/new_wallet': (context) => NewWallet(),
         '/recover_wallet': (context) => RecoverWallet(),
+        '/secret_phrase': (context) => SecretPhrase(),
+        '/finally_screen': (context) => FinallyScreen(),
+        '/main': (context) => MainScreen(),
       },
     );
   }

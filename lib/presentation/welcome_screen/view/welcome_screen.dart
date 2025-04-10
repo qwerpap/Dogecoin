@@ -63,26 +63,23 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Welcome to Doge Wallet',
+                  'Welcome to Doge Wallet\nManage DOGE quickly,',
                   style: theme.textTheme.headlineMedium?.copyWith(
                     color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 15),
                 Text(
-                  'Manage DOGE quickly,',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    color: AppColors.yellowTextColor,
-                  ),
-                ),
-                Text(
-                  'conveniently and safely',
+                  textAlign: TextAlign.center,
+                  'Manage DOGE quickly,\nconveniently and safely',
                   style: theme.textTheme.titleLarge?.copyWith(
                     color: AppColors.yellowTextColor,
                   ),
                 ),
                 const SizedBox(height: 40),
                 CustomCheckbox(
+                  text: 'I accept ',
+                  textUnderline: 'Terms Of Use',
                   value: _termsAccepted,
                   onChanged: (value) {
                     setState(() {
@@ -95,7 +92,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   text: 'New wallet',
                   enabled: _termsAccepted,
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/new_wallet');
+                    Navigator.pushNamed(context, '/new_wallet');
                   },
                   activeStyle: activeButtonStyle,
                   disabledStyle: disableButtonStyle,
@@ -105,7 +102,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   text: 'Recover wallet',
                   enabled: _termsAccepted,
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/recover_wallet');
+                    Navigator.pushNamed(context, '/recover_wallet');
                   },
                   activeStyle: activeButtonStyle,
                   disabledStyle: disableButtonStyle,

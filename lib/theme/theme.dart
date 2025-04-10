@@ -11,13 +11,20 @@ final themeData = ThemeData(
     ),
     //jost
     titleMedium: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
+    labelLarge: TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0.15,
+    ),
     bodySmall: TextStyle(fontSize: 13, fontWeight: FontWeight.w400),
     //Comic Sans MS
     headlineMedium: TextStyle(fontSize: 26, fontWeight: FontWeight.w700),
-    titleLarge: TextStyle(
-      fontSize: 22,
-      fontWeight: FontWeight.w700
-    )
+    titleLarge: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+
+    //raleway
+    bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+    //default
+    bodyMedium: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
   ),
   scaffoldBackgroundColor: AppColors.primaryColor,
 );

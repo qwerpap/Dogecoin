@@ -5,12 +5,16 @@ class CustomCheckbox extends StatelessWidget {
   final bool value;
   final ValueChanged<bool?> onChanged;
   final TextStyle? textStyle;
+  final String text;
+  final String? textUnderline;
 
   const CustomCheckbox({
     super.key,
     required this.value,
     required this.onChanged,
     this.textStyle,
+    required this.text,
+    this.textUnderline,
   });
 
   @override
@@ -40,13 +44,13 @@ class CustomCheckbox extends StatelessWidget {
             visualDensity: VisualDensity.compact,
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 5),
         Flexible(
           child: Text.rich(
             TextSpan(
               children: [
                 TextSpan(
-                  text: 'I accept ',
+                  text: text,
                   style:
                       textStyle ??
                       theme.textTheme.bodySmall?.copyWith(
@@ -54,7 +58,7 @@ class CustomCheckbox extends StatelessWidget {
                       ),
                 ),
                 TextSpan(
-                  text: 'Terms Of Use',
+                  text: textUnderline,
                   style: (textStyle ?? theme.textTheme.bodySmall)?.copyWith(
                     color: AppColors.blackTextColor,
                     decoration: TextDecoration.underline,

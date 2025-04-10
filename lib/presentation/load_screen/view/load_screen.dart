@@ -43,29 +43,31 @@ class _LoadScreenState extends State<LoadScreen> {
           child:
               _showLoader
                   ? const UniverseLoader()
-                  : Column(
-                    key: const ValueKey('logo_and_name'),
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/png/logo.png',
-                        height: 305,
-                        errorBuilder:
-                            (context, error, stackTrace) => const Icon(
-                              Icons.error,
-                              size: 200,
-                              color: AppColors.secondaryColor,
-                            ),
-                      ),
-                      const SizedBox(height: 14),
-                      Text(
-                        AppStrings.dogeWallet,
-                        style: theme.textTheme.displayMedium?.copyWith(
-                          color: Colors.white,
+                  : Center(
+                    child: Column(
+                      key: const ValueKey('logo_and_name'),
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/png/logo.png',
+                          height: 305,
+                          errorBuilder:
+                              (context, error, stackTrace) => const Icon(
+                                Icons.error,
+                                size: 200,
+                                color: AppColors.secondaryColor,
+                              ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 14),
+                        Text(
+                          AppStrings.dogeWallet,
+                          style: theme.textTheme.displayMedium?.copyWith(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
         ),
       ),
