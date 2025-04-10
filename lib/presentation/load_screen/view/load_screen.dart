@@ -28,7 +28,7 @@ class _LoadScreenState extends State<LoadScreen> {
     // Через 4 секунды — переход на главный экран
     Timer(const Duration(seconds: 7), () {
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/welcome');
+        Navigator.pushNamed(context, '/welcome');
       }
     });
   }
