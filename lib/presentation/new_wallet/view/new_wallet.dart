@@ -3,7 +3,7 @@ import 'package:dogecoin/presentation/welcome_screen/widgets/logo_image.dart';
 import 'package:dogecoin/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import '../../welcome_screen/widgets/custom_checkbox.dart';
-import '../widgets/arrow_back.dart';
+import '../../global_widgets/arrow_back.dart';
 
 class NewWallet extends StatefulWidget {
   const NewWallet({super.key});
@@ -33,7 +33,6 @@ class _NewWalletState extends State<NewWallet> {
     backgroundColor: AppColors.disableButtonStyle,
     foregroundColor: AppColors.blackTextColor,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-    side: const BorderSide(color: AppColors.secondaryColor, width: 0.5),
     overlayColor: AppColors.overlayButtonColor,
   ).copyWith(
     overlayColor: WidgetStateProperty.resolveWith<Color?>((states) {
@@ -52,12 +51,12 @@ class _NewWalletState extends State<NewWallet> {
         children: [
           Column(
             children: [
-              LogoImage(height: 200),
+              LogoImage(height: 295),
               Container(
-                padding: const EdgeInsets.only(top: 22, bottom: 80),
+                padding: const EdgeInsets.only(top: 22, bottom: 20),
                 width: double.infinity,
                 decoration: const BoxDecoration(
-                  color: AppColors.secondaryColor,
+                  color: AppColors.darkYellowColor,
                   border: Border(
                     top: BorderSide(width: 1.5, color: AppColors.whiteColor),
                   ),
@@ -90,14 +89,17 @@ class _NewWalletState extends State<NewWallet> {
                       text: 'I have saved the secret phrase in a safe place',
                     ),
                     const SizedBox(height: 27),
-                    CustomActionButton(
-                      text: 'Continue',
-                      enabled: _termsAccepted,
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/secret_phrase');
-                      },
-                      activeStyle: activeButtonStyle,
-                      disabledStyle: disableButtonStyle,
+                    SizedBox(
+                      width: 274,
+                      child: CustomActionButton(
+                        text: 'Continue',
+                        enabled: _termsAccepted,
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/secret_phrase');
+                        },
+                        activeStyle: activeButtonStyle,
+                        disabledStyle: disableButtonStyle,
+                      ),
                     ),
                   ],
                 ),

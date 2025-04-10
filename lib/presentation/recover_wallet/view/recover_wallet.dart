@@ -1,5 +1,5 @@
 import 'package:dogecoin/presentation/global_widgets/custom_alert_dialog.dart';
-import 'package:dogecoin/presentation/new_wallet/widgets/arrow_back.dart';
+import 'package:dogecoin/presentation/global_widgets/arrow_back.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:dogecoin/presentation/welcome_screen/widgets/custom_action_button.dart';
@@ -36,7 +36,6 @@ class _RecoverWalletState extends State<RecoverWallet> {
     backgroundColor: AppColors.disableButtonStyle,
     foregroundColor: AppColors.blackTextColor,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-    side: const BorderSide(color: AppColors.secondaryColor, width: 0.5),
   ).copyWith(
     overlayColor: WidgetStateProperty.resolveWith<Color?>((states) {
       if (states.contains(WidgetState.pressed)) {
@@ -121,7 +120,7 @@ class _RecoverWalletState extends State<RecoverWallet> {
                 padding: const EdgeInsets.only(top: 22, bottom: 80),
                 width: double.infinity,
                 decoration: const BoxDecoration(
-                  color: AppColors.secondaryColor,
+                  color: AppColors.darkYellowColor,
                   border: Border(
                     top: BorderSide(width: 1.5, color: AppColors.whiteColor),
                   ),

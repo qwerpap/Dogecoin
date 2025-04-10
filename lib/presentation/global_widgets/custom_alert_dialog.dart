@@ -53,9 +53,8 @@ class CustomAlertDialog extends StatelessWidget {
                           ? SizedBox()
                           : Text(
                             message.toString(),
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodyLarge?.copyWith(color: Colors.black),
+                            style: Theme.of(context).textTheme.bodyLarge
+                                ?.copyWith(color: Colors.black),
                             textAlign: TextAlign.center,
                           ),
                       const SizedBox(height: 12),
@@ -63,11 +62,11 @@ class CustomAlertDialog extends StatelessWidget {
                       const SizedBox(height: 6),
                       GestureDetector(
                         onTap: onRetry,
-                        child: Text(
+                        child: 
+                         Text(
                           button,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.blueTextColor,
-                          ),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: AppColors.blueTextColor),
                           textAlign: TextAlign.center,
                         ),
                       ),

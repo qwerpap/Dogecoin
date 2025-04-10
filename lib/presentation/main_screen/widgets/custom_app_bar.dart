@@ -2,7 +2,14 @@ import 'package:dogecoin/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatelessWidget {
-  const CustomAppBar({super.key});
+  const CustomAppBar({
+    super.key,
+    required this.containerColor,
+    required this.iconColor,
+  });
+
+  final Color containerColor;
+  final Color iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -66,11 +73,28 @@ class CustomAppBar extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 17),
-              Container(
-                height: 47,
-                width: 47,
-                decoration: BoxDecoration(color: Colors.white),
-                child: Icon(Icons.settings, color: AppColors.secondaryColor),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/settings');
+                },
+                child: Material(
+                  color: containerColor,
+                  child: InkWell(
+                    splashColor: AppColors.borderButtonColor,
+                    highlightColor: AppColors.overlayButtonColor.withOpacity(
+                      0.15,
+                    ),
+                    onTap: () {
+                      Navigator.pushNamed(context, '/settings');
+                    },
+                    child: Container(
+                      height: 47,
+                      width: 47,
+                      alignment: Alignment.center,
+                      child: Icon(Icons.settings, color: iconColor),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

@@ -60,7 +60,7 @@ class _FinallyScreenState extends State<FinallyScreen> {
                   padding: const EdgeInsets.only(top: 22, bottom: 80),
                   width: double.infinity,
                   decoration: const BoxDecoration(
-                    color: AppColors.secondaryColor,
+                    color: AppColors.darkYellowColor,
                     border: Border(
                       top: BorderSide(width: 1.5, color: AppColors.whiteColor),
                     ),
@@ -83,14 +83,17 @@ class _FinallyScreenState extends State<FinallyScreen> {
                         ),
                       ),
                       const SizedBox(height: 18),
-                      CustomActionButton(
-                        text: 'Run app',
-                        enabled: true,
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/main');
-                        },
-                        activeStyle: activeButtonStyle,
-                        disabledStyle: disableButtonStyle,
+                      SizedBox(
+                        width: 324,
+                        child: CustomActionButton(
+                          text: 'Run app',
+                          enabled: true,
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/main');
+                          },
+                          activeStyle: activeButtonStyle,
+                          disabledStyle: disableButtonStyle,
+                        ),
                       ),
                     ],
                   ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../../theme/app_colors.dart';
+import '../../theme/app_colors.dart';
 
 class ArrowBack extends StatelessWidget {
   const ArrowBack({super.key});
@@ -16,8 +15,13 @@ class ArrowBack extends StatelessWidget {
           Navigator.pop(context);
         },
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(Icons.arrow_back_ios, size: 16),
+            Padding(
+              padding: const EdgeInsets.only(top: 3),
+              child: Icon(Icons.arrow_back_ios, size: 16),
+            ),
             Text(
               'Back',
               style: theme.textTheme.bodyLarge?.copyWith(

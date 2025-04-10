@@ -7,7 +7,7 @@ import 'package:dogecoin/presentation/welcome_screen/widgets/logo_image.dart';
 import 'package:dogecoin/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../widgets/arrow_back.dart';
+import '../../global_widgets/arrow_back.dart';
 
 class SecretPhrase extends StatefulWidget {
   const SecretPhrase({super.key});
@@ -100,70 +100,73 @@ class _SecretPhraseState extends State<SecretPhrase> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              LogoImage(height: 200),
-              Container(
-                padding: const EdgeInsets.only(
-                  top: 22,
-                  bottom: 80,
-                  left: 35,
-                  right: 35,
-                ),
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: AppColors.secondaryColor,
-                  border: Border(
-                    top: BorderSide(width: 1.5, color: AppColors.whiteColor),
+   body: Stack(
+  children: [
+    Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: LogoImage(height: 175),
+        ),
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 35,
+              vertical: 22,
+            ),
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              color: AppColors.darkYellowColor,
+              border: Border(
+                top: BorderSide(width: 1.5, color: AppColors.whiteColor),
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  'Create a new wallet',
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    color: Colors.white,
                   ),
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Create a new wallet',
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    Text(
-                      textAlign: TextAlign.center,
-                      'Your secret phrase to\nenter the wallet',
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        color: AppColors.yellowTextColor,
-                      ),
-                    ),
-                    const SizedBox(height: 13),
-                    SecretPhraseList(
-                      secretWords: _secretWords,
-                      onCopyPressed: _copySecretPhrase,
-                      copyButtonStyle: copyButtonStyle,
-                      theme: theme,
-                    ),
-                    const SizedBox(height: 13),
-                    SizedBox(
-                      width: 326,
-                      child: CustomActionButton(
-                        text: 'Search',
-                        enabled: true,
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/finally_screen');
-                        },
-                        activeStyle: activeButtonStyle,
-                        disabledStyle: disableButtonStyle,
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: 15),
+                Text(
+                  textAlign: TextAlign.center,
+                  'Your secret phrase to\nenter the wallet',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    color: AppColors.yellowTextColor,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 13),
+                SecretPhraseList(
+                  secretWords: _secretWords,
+                  onCopyPressed: _copySecretPhrase,
+                  copyButtonStyle: copyButtonStyle,
+                  theme: theme,
+                ),
+                const Spacer(),
+                SizedBox(
+                  width: double.infinity,
+                  child: CustomActionButton(
+                    text: 'Search',
+                    enabled: true,
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/finally_screen');
+                    },
+                    activeStyle: activeButtonStyle,
+                    disabledStyle: disableButtonStyle,
+                  ),
+                ),
+              ],
+            ),
           ),
-          const ArrowBack(),
-        ],
-      ),
+        ),
+      ],
+    ),
+    const ArrowBack(),
+  ],
+),
     );
   }
 }

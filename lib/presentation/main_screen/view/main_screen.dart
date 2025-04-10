@@ -1,3 +1,5 @@
+import 'package:dogecoin/presentation/global_widgets/custom_alert_dialog.dart';
+import 'package:dogecoin/presentation/main_screen/widgets/comma_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:dogecoin/theme/app_colors.dart';
@@ -14,6 +16,7 @@ class _MainScreenState extends State<MainScreen> {
   String transactionMessage = 'There are no transactions yet';
   bool showSendForm = false;
   bool showAmountInput = false;
+  bool showReceiveForm = false; // Флаг для отображения экрана Receive
 
   final _addressController = TextEditingController();
   final _amountController = TextEditingController();
@@ -27,6 +30,27 @@ class _MainScreenState extends State<MainScreen> {
     _addressController.dispose();
     _amountController.dispose();
     super.dispose();
+  }
+
+  // Методы для управления состоянием и UI
+  void _startReceive() {
+    setState(() {
+      showReceiveForm = true; // Отображаем форму Receive
+      showSendForm = false; // Скрываем форму Send
+      showAmountInput = false; // Скрываем поле ввода суммы
+
+      // Если адрес в _addressController пустой, генерируем случайный адрес
+      if (_addressController.text.isEmpty) {
+        _addressController.text =
+            'etwet4w3t4WEgerzerg343t434g543t4g34g334g'; // Пример случайного адреса
+      }
+    });
+  }
+
+  void _cancelReceive() {
+    setState(() {
+      showReceiveForm = false; // Скрываем форму Receive
+    });
   }
 
   Future<void> _pasteAddress() async {
@@ -62,8 +86,7 @@ class _MainScreenState extends State<MainScreen> {
       transactionMessage = 'Transaction sent successfully';
       showSendForm = false;
       showAmountInput = false;
-      // Оставляем текст в контроллерах для отображения на экране
-      isTransactionComplete = true; // Устанавливаем, что транзакция завершена
+      isTransactionComplete = true;
     });
   }
 
@@ -87,11 +110,14 @@ class _MainScreenState extends State<MainScreen> {
       body: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.all(34),
+            padding: const EdgeInsets.all(35),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const CustomAppBar(),
+                const CustomAppBar(
+                  containerColor: AppColors.whiteColor,
+                  iconColor: AppColors.secondaryColor,
+                ),
                 const SizedBox(height: 35),
                 _buildBalanceSection(theme),
                 const SizedBox(height: 9),
@@ -99,12 +125,13 @@ class _MainScreenState extends State<MainScreen> {
                 const SizedBox(height: 28),
                 if (showSendForm)
                   _buildSendForm(theme)
+                else if (showReceiveForm)
+                  _buildReceiveForm(theme)
                 else
                   _buildTransactionStatus(theme),
               ],
             ),
           ),
-          // Контейнер с сообщением о транзакции
           if (isTransactionComplete)
             Positioned.fill(
               child: Container(
@@ -123,10 +150,13 @@ class _MainScreenState extends State<MainScreen> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 18),
-                    Text(
-                      'Address',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: AppColors.whiteColor,
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        'Address',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AppColors.whiteColor,
+                        ),
                       ),
                     ),
                     SizedBox(height: 5),
@@ -149,10 +179,13 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                     ),
                     const SizedBox(height: 9),
-                    Text(
-                      'Amount',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: AppColors.whiteColor,
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        'Amount',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AppColors.whiteColor,
+                        ),
                       ),
                     ),
                     SizedBox(height: 5),
@@ -217,6 +250,99 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  Widget _buildReceiveForm(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Center(
+          child: Text(
+            'Receive',
+            style: theme.textTheme.headlineMedium?.copyWith(
+              color: AppColors.whiteColor,
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Align(
+          alignment: Alignment.topLeft,
+          child: Text(
+            'Your address:',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: AppColors.whiteColor,
+            ),
+          ),
+        ),
+        SizedBox(height: 5),
+        Stack(
+          children: [
+            Container(
+              height: 75,
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+              decoration: BoxDecoration(color: Colors.white),
+              child: Text(
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                _addressController.text, // Display address
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.blackTextColor,
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: ElevatedButton(
+                style: copyButtonStyle,
+                onPressed: () async {
+                  await Clipboard.setData(
+                    ClipboardData(text: _addressController.text),
+                  );
+
+                  // Show custom alert dialog after copying
+                  if (context.mounted) {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return CustomAlertDialog(
+                          title: 'Your address copied',
+                          button: 'OK',
+                          onRetry: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                        );
+                      },
+                    );
+                  }
+                },
+                child: Text(
+                  'Copy',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.blackTextColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        SizedBox(
+          width: double.infinity,
+          height: 58,
+          child: ElevatedButton(
+            style: _nextButtonStyle,
+            onPressed: _cancelReceive,
+            child: Text('Back to Home'),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildBalanceSection(ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,7 +358,13 @@ class _MainScreenState extends State<MainScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _buildBalanceCard('0,000', 'DOGE', 'assets/png/dogecoin.png'),
-            const Text('~'),
+            const Text(
+              '~',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.white,
+              ),
+            ),
             _buildUsdBalance('\$0,00'),
           ],
         ),
@@ -285,7 +417,7 @@ class _MainScreenState extends State<MainScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _buildMainButton('Send', _startSend, theme),
-          _buildMainButton('Receive', () {}, theme),
+          _buildMainButton('Recieve', _startReceive, theme),
         ],
       ),
     );
@@ -363,6 +495,7 @@ class _MainScreenState extends State<MainScreen> {
                       decimal: true,
                     ),
                     inputFormatters: [
+                      CommaInputFormatter(),
                       FilteringTextInputFormatter.allow(RegExp(r'[0-9,.]')),
                       LengthLimitingTextInputFormatter(15),
                     ],
@@ -406,7 +539,7 @@ class _MainScreenState extends State<MainScreen> {
                     ? (showAmountInput ? _sendTransaction : _nextStep)
                     : null,
             child: Text(
-              showAmountInput ? 'Finish' : 'Next',
+              showAmountInput ? 'Send' : 'Next',
               style: theme.textTheme.bodyLarge?.copyWith(
                 fontSize: 17,
                 fontWeight: FontWeight.w600,
@@ -502,6 +635,7 @@ class _MainScreenState extends State<MainScreen> {
     backgroundColor: AppColors.activeButtonStyle,
     foregroundColor: AppColors.blackTextColor,
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+    side: BorderSide(color: AppColors.secondaryColor),
     elevation: 0,
   ).copyWith(
     overlayColor: WidgetStateProperty.resolveWith<Color?>(
@@ -521,10 +655,25 @@ class _MainScreenState extends State<MainScreen> {
   );
 }
 
+final ButtonStyle copyButtonStyle = ElevatedButton.styleFrom(
+  backgroundColor: AppColors.activeButtonStyle,
+  foregroundColor: AppColors.blackTextColor,
+  shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+  elevation: 0,
+  padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 5),
+).copyWith(
+  overlayColor: WidgetStateProperty.resolveWith<Color?>(
+    (states) =>
+        states.contains(WidgetState.pressed)
+            ? AppColors.overlayButtonColor
+            : null,
+  ),
+);
+
 final ButtonStyle _nextButtonStyle = ElevatedButton.styleFrom(
   backgroundColor: AppColors.primaryColor.withOpacity(
     0.3,
-  ), // Прозрачный цвет по умолчанию
+  ), 
   foregroundColor: AppColors.blackTextColor,
   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
   side: const BorderSide(color: AppColors.borderButtonColor),

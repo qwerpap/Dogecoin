@@ -32,7 +32,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     backgroundColor: AppColors.disableButtonStyle,
     foregroundColor: AppColors.blackTextColor,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-    side: const BorderSide(color: AppColors.secondaryColor, width: 0.5),
     overlayColor: AppColors.overlayButtonColor,
   ).copyWith(
     overlayColor: WidgetStateProperty.resolveWith<Color?>((states) {
@@ -54,7 +53,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             padding: const EdgeInsets.only(top: 22, bottom: 80),
             width: double.infinity,
             decoration: const BoxDecoration(
-              color: AppColors.secondaryColor,
+              color: AppColors.darkYellowColor,
               border: Border(
                 top: BorderSide(width: 1.5, color: AppColors.whiteColor),
               ),
