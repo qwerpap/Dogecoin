@@ -17,4 +17,10 @@ class AuthStorage {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyIsLoggedIn);
   }
+
+  // Новый метод: полная очистка данных аутентификации
+  static Future<void> clearAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_keyIsLoggedIn);
+  }
 }
