@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:dogecoin/main.dart';
 import 'package:dogecoin/presentation/main_screen/widgets/custom_app_bar.dart';
 import 'package:dogecoin/theme/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -101,7 +102,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             CustomAppBar(
               containerColor: AppColors.activeSettingIcon,
-              iconColor: AppColors.whiteColor, padding: 0,
+              iconColor: AppColors.whiteColor,
+              padding: 0,
             ),
             SizedBox(height: 34),
             Align(
@@ -173,7 +175,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         children: [
                           Positioned.fill(
                             child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 0.8, sigmaY: 0.8),
+                              filter: ImageFilter.blur(
+                                sigmaX: 0.8,
+                                sigmaY: 0.8,
+                              ),
                               child: Container(color: Colors.transparent),
                             ),
                           ),
@@ -244,11 +249,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             ),
                                             Expanded(
                                               child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pushNamed(
-                                                    context,
-                                                    '/welcome',
-                                                  );
+                                                onTap: () async {
+                                                  // 1. Очищаем данные аутентификации
+                                                  await AuthStorage.reset();
+
+                                                  // 2. Перенаправляем нАа /welcome и запрещаем возврат
+                                                  if (mounted) {
+                                                    Navigator.pushReplacementNamed(
+                                                      context,
+                                                      '/welcome',
+                                                    );
+                                                  }
                                                 },
                                                 child: Text(
                                                   'Delete',

@@ -1,4 +1,3 @@
-import 'package:dogecoin/presentation/global_widgets/lifecycle_watcher.dart';
 import 'package:dogecoin/presentation/load_screen/view/load_screen.dart';
 import 'package:dogecoin/presentation/main_screen/view/main_screen.dart';
 import 'package:dogecoin/presentation/new_wallet/view/finally_screen.dart';
@@ -13,35 +12,29 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
-  // WidgetsFlutterBinding.ensureInitialized();
-  // final isLoggedIn = await AuthStorage.isLoggedIn();
-
-  // final initialRoute = isLoggedIn ? '/main' : '/welcome';
-
-  runApp(DogecoinApp(initialRoute: '/main'));  // initialRoute: initialRoute
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const DogecoinApp());
 }
 
 class DogecoinApp extends StatelessWidget {
-  final String initialRoute;
-
-  const DogecoinApp({super.key, required this.initialRoute});
+  const DogecoinApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: themeData,
-      initialRoute: initialRoute,
+      initialRoute: '/load', // всегда начинаем с экрана загрузки
       routes: {
-        '/load': (context) => LoadScreen(),
-        '/welcome': (context) => WelcomeScreen(),
-        '/register': (context) => RegistrationScreen(),
-        '/new_wallet': (context) => NewWallet(),
-        '/recover_wallet': (context) => RecoverWallet(),
-        '/secret_phrase': (context) => SecretPhrase(),
-        '/finally_screen': (context) => FinallyScreen(),
-        '/main': (context) => MainScreen(),
-        '/settings': (context) => SettingsScreen(),
+        '/load': (context) => const LoadScreen(),
+        '/welcome': (context) => const WelcomeScreen(),
+        '/register': (context) => const RegistrationScreen(),
+        '/new_wallet': (context) => const NewWallet(),
+        '/recover_wallet': (context) => const RecoverWallet(),
+        '/secret_phrase': (context) => const SecretPhrase(),
+        '/finally_screen': (context) => const FinallyScreen(),
+        '/main': (context) => const MainScreen(),
+        '/settings': (context) => const SettingsScreen(),
       },
     );
   }
