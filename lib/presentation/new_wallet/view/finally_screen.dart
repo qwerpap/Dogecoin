@@ -1,8 +1,10 @@
+import 'package:dogecoin/main.dart';
 import 'package:dogecoin/presentation/welcome_screen/widgets/custom_action_button.dart';
 import 'package:dogecoin/presentation/welcome_screen/widgets/logo_image.dart';
 import 'package:dogecoin/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FinallyScreen extends StatefulWidget {
   const FinallyScreen({super.key});
@@ -12,7 +14,6 @@ class FinallyScreen extends StatefulWidget {
 }
 
 class _FinallyScreenState extends State<FinallyScreen> {
-
   static ButtonStyle activeButtonStyle = ElevatedButton.styleFrom(
     backgroundColor: AppColors.activeButtonStyle,
     foregroundColor: AppColors.blackTextColor,
@@ -88,7 +89,9 @@ class _FinallyScreenState extends State<FinallyScreen> {
                         child: CustomActionButton(
                           text: 'Run app',
                           enabled: true,
-                          onPressed: () {
+                          onPressed: () async {
+                            await AuthStorage.setLoggedIn(true);
+                            if (!mounted) return;
                             Navigator.pushNamed(context, '/main');
                           },
                           activeStyle: activeButtonStyle,

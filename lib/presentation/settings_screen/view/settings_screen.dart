@@ -101,7 +101,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             CustomAppBar(
               containerColor: AppColors.activeSettingIcon,
-              iconColor: AppColors.whiteColor,
+              iconColor: AppColors.whiteColor, padding: 0,
             ),
             SizedBox(height: 34),
             Align(
@@ -173,10 +173,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         children: [
                           Positioned.fill(
                             child: BackdropFilter(
-                              filter: ImageFilter.blur(
-                                sigmaX: 0.8,
-                                sigmaY: 0.8,
-                              ),
+                              filter: ImageFilter.blur(sigmaX: 0.8, sigmaY: 0.8),
                               child: Container(color: Colors.transparent),
                             ),
                           ),

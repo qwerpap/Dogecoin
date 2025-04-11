@@ -1,8 +1,11 @@
+import 'package:dogecoin/data/models/transaction.dart';
+import 'package:dogecoin/presentation/global_widgets/auth_stotage.dart';
 import 'package:dogecoin/presentation/global_widgets/custom_alert_dialog.dart';
 import 'package:dogecoin/presentation/main_screen/widgets/comma_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:dogecoin/theme/app_colors.dart';
+import 'package:intl/intl.dart';
 import '../widgets/custom_app_bar.dart';
 
 class MainScreen extends StatefulWidget {
@@ -12,39 +15,55 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
-  String transactionMessage = 'There are no transactions yet';
+class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
+  String transactionMessage = 'There is no transactions for now';
   bool showSendForm = false;
   bool showAmountInput = false;
-  bool showReceiveForm = false; // Флаг для отображения экрана Receive
+  bool showReceiveForm = false;
 
   final _addressController = TextEditingController();
   final _amountController = TextEditingController();
 
-  bool isTransactionComplete = false;
+  final _addressFocusNode = FocusNode();
+  final _amountFocusNode = FocusNode();
 
+  // Управление состоянием видимости клавиатуры
+  bool isKeyboardVisible = false;
+
+  bool isTransactionComplete = false;
   bool isNextButtonEnabled = false;
+
+  List<Transaction> transactions = [];
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _addressFocusNode.dispose();
+    _amountFocusNode.dispose();
     _addressController.dispose();
     _amountController.dispose();
     super.dispose();
   }
 
-  // Методы для управления состоянием и UI
+  @override
+  void didChangeMetrics() {
+    final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
+    setState(() {
+      isKeyboardVisible = bottomInset > 0;
+    });
+  }
+
   void _startReceive() {
     setState(() {
-      showReceiveForm = true; // Отображаем форму Receive
-      showSendForm = false; // Скрываем форму Send
-      showAmountInput = false; // Скрываем поле ввода суммы
+      showReceiveForm = true;
+      showSendForm = false;
+      showAmountInput = false;
 
-      // Если адрес в _addressController пустой, генерируем случайный адрес
       if (_addressController.text.isEmpty) {
-        _addressController.text =
-            'etwet4w3t4WEgerzerg343t434g543t4g34g334g'; // Пример случайного адреса
+        _addressController.text = 'etwet4w3t4WEgerzerg343t434g543t4g34g334g';
       }
     });
+    FocusScope.of(context).unfocus();
   }
 
   void _cancelReceive() {
@@ -64,6 +83,7 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
+  // Методы для управления состоянием и UI
   void _startSend() {
     setState(() {
       showSendForm = true;
@@ -72,6 +92,7 @@ class _MainScreenState extends State<MainScreen> {
       _amountController.clear();
       isNextButtonEnabled = false;
     });
+    FocusScope.of(context).unfocus();
   }
 
   void _nextStep() {
@@ -83,10 +104,20 @@ class _MainScreenState extends State<MainScreen> {
 
   void _sendTransaction() {
     setState(() {
-      transactionMessage = 'Transaction sent successfully';
+      // transactionMessage = 'Transaction sent successfully'; // Убираем это
       showSendForm = false;
       showAmountInput = false;
       isTransactionComplete = true;
+
+      // Добавляем транзакцию в список
+      transactions.add(
+        Transaction(
+          address: _addressController.text,
+          amount: _amountController.text,
+        ),
+      );
+      _addressController.clear();
+      _amountController.clear();
     });
   }
 
@@ -95,6 +126,7 @@ class _MainScreenState extends State<MainScreen> {
       showSendForm = false;
       showAmountInput = false;
     });
+    FocusScope.of(context).unfocus();
   }
 
   void _onInputChanged(String value) {
@@ -103,149 +135,69 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  void _keyboardVisibilityListener() {
+    final keyboardIsVisible =
+        _addressFocusNode.hasFocus || _amountFocusNode.hasFocus;
+    if (keyboardIsVisible != isKeyboardVisible) {
+      setState(() {
+        isKeyboardVisible = keyboardIsVisible;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    AuthStorage.setLoggedIn(true);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(35),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const CustomAppBar(
-                  containerColor: AppColors.whiteColor,
-                  iconColor: AppColors.secondaryColor,
-                ),
-                const SizedBox(height: 35),
-                _buildBalanceSection(theme),
-                const SizedBox(height: 9),
-                _buildActionButtons(theme),
-                const SizedBox(height: 28),
-                if (showSendForm)
-                  _buildSendForm(theme)
-                else if (showReceiveForm)
-                  _buildReceiveForm(theme)
-                else
-                  _buildTransactionStatus(theme),
-              ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            const CustomAppBar(
+              containerColor: AppColors.whiteColor,
+              iconColor: AppColors.secondaryColor,
+              padding: 35,
             ),
-          ),
-          if (isTransactionComplete)
-            Positioned.fill(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 35),
-                color: AppColors.primaryColor,
+            const SizedBox(height: 13),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 35),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildBalanceSection(theme),
+                  const SizedBox(height: 9),
+                  _buildActionButtons(theme),
+                  const SizedBox(height: 28),
+                ],
+              ),
+            ),
+
+            // Прокручиваемая часть с формами
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 35),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Image.asset('assets/png/logo.png'),
-                    SizedBox(height: 25),
-                    Text(
-                      'Your transaction has\nbeen successfully sent',
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        color: AppColors.whiteColor,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 18),
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        'Address',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: AppColors.whiteColor,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 15,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(color: Colors.white),
-                      child: Text(
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        _addressController.text,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.blackTextColor,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 9),
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        'Amount',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: AppColors.whiteColor,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 15,
-                        vertical: 18,
-                      ),
-                      decoration: BoxDecoration(color: Colors.white),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            'assets/png/dogecoin.png',
-                            height: 25,
-                            width: 25,
-                          ),
-                          SizedBox(width: 6),
-                          Text(
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            _amountController.text,
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.borderButtonColor,
-                            ),
-                          ),
-                          SizedBox(width: 6),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Text(
-                              'DOGE',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.secondaryColor,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 58,
-                      child: ElevatedButton(
-                        style: _nextButtonStyle,
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/main');
-                        },
-                        child: Text('Back home'),
-                      ),
-                    ),
+                    if (showSendForm)
+                      _buildSendForm(theme)
+                    else if (showReceiveForm)
+                      _buildReceiveForm(theme)
+                    else
+                      _buildTransactionStatus(theme),
+                    if (transactions.isNotEmpty) _buildTransactionList(),
                   ],
                 ),
               ),
             ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -283,7 +235,7 @@ class _MainScreenState extends State<MainScreen> {
               child: Text(
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                _addressController.text, // Display address
+                _addressController.text,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -301,7 +253,6 @@ class _MainScreenState extends State<MainScreen> {
                     ClipboardData(text: _addressController.text),
                   );
 
-                  // Show custom alert dialog after copying
                   if (context.mounted) {
                     showDialog(
                       context: context,
@@ -310,7 +261,7 @@ class _MainScreenState extends State<MainScreen> {
                           title: 'Your address copied',
                           button: 'OK',
                           onRetry: () {
-                            Navigator.of(context).pop(); // Close the dialog
+                            Navigator.of(context).pop();
                           },
                         );
                       },
@@ -343,6 +294,77 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  Widget _buildTransactionList() {
+    return Column(
+      children: [
+        const SizedBox(height: 20),
+        const Align(
+          alignment: Alignment.centerLeft,
+          child: Text('List of transactions:'),
+        ),
+        const SizedBox(height: 5),
+        ...transactions.map((transaction) {
+          String formattedDate = DateFormat(
+            'dd.MM.yyyy',
+          ).format(transaction.timestamp);
+          return Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+            decoration: BoxDecoration(color: AppColors.secondaryColor),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      '+${transaction.amount}',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleLarge?.copyWith(color: Colors.white),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'DOGE',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.white),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text(
+                      '~\$',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontSize: 14,
+                        color: AppColors.borderButtonColor,
+                      ),
+                    ),
+                    Text(
+                      '32,54',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontSize: 15,
+                        color: AppColors.whiteColor,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Text(
+                      formattedDate,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontSize: 12,
+                        color: AppColors.borderButtonColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ],
+    );
+  }
+
   Widget _buildBalanceSection(ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -360,10 +382,7 @@ class _MainScreenState extends State<MainScreen> {
             _buildBalanceCard('0,000', 'DOGE', 'assets/png/dogecoin.png'),
             const Text(
               '~',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.white,
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.white),
             ),
             _buildUsdBalance('\$0,00'),
           ],
@@ -467,6 +486,7 @@ class _MainScreenState extends State<MainScreen> {
             style: _pasteButtonStyle,
             child: Text('Paste', style: theme.textTheme.titleMedium),
           ),
+          focusNode: _addressFocusNode,
         ),
         const SizedBox(height: 18),
         if (showAmountInput)
@@ -512,15 +532,15 @@ class _MainScreenState extends State<MainScreen> {
                       fillColor: AppColors.whiteColor,
                     ),
                     onChanged: _onInputChanged,
+                    focusNode: _amountFocusNode,
                   ),
                 ),
-                // Текст DOGE, который всегда будет находиться рядом с TextField
                 Padding(
                   padding: const EdgeInsets.only(left: 10),
                   child: Text(
                     'DOGE',
                     style: const TextStyle(
-                      color: AppColors.secondaryColor, // Цвет текста
+                      color: AppColors.secondaryColor,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -565,6 +585,7 @@ class _MainScreenState extends State<MainScreen> {
     Widget? suffix,
     String hintText = 'Enter address',
     List<TextInputFormatter>? inputFormatter,
+    required FocusNode focusNode,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -606,6 +627,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildTransactionStatus(ThemeData theme) {
+    if (transactions.isNotEmpty) return SizedBox.shrink();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -618,13 +640,16 @@ class _MainScreenState extends State<MainScreen> {
         SizedBox(height: 9),
         Container(
           width: double.infinity,
-          height: 90,
+          padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 36),
           decoration: BoxDecoration(color: AppColors.secondaryColor),
-          child: Center(
-            child: Text(
-              'There is no transactions for now',
-              style: theme.textTheme.bodySmall?.copyWith(fontSize: 14),
+          child: Text(
+            transactionMessage,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: AppColors.blackTextColor,
             ),
+            textAlign: TextAlign.center,
           ),
         ),
       ],
@@ -671,9 +696,7 @@ final ButtonStyle copyButtonStyle = ElevatedButton.styleFrom(
 );
 
 final ButtonStyle _nextButtonStyle = ElevatedButton.styleFrom(
-  backgroundColor: AppColors.primaryColor.withOpacity(
-    0.3,
-  ), 
+  backgroundColor: AppColors.primaryColor.withOpacity(0.3),
   foregroundColor: AppColors.blackTextColor,
   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
   side: const BorderSide(color: AppColors.borderButtonColor),
