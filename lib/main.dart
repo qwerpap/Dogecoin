@@ -18,7 +18,7 @@ void main() async {
 
   // final initialRoute = isLoggedIn ? '/main' : '/welcome';
 
-  runApp(DogecoinApp(initialRoute: '/recover_wallet'));  // initialRoute: initialRoute
+  runApp(DogecoinApp(initialRoute: '/main'));  // initialRoute: initialRoute
 }
 
 class DogecoinApp extends StatelessWidget {

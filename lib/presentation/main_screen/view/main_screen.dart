@@ -15,14 +15,20 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
-  String transactionMessage = 'There are no transactions yet';
+class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
+  String transactionMessage = 'There is no transactions for now';
   bool showSendForm = false;
   bool showAmountInput = false;
   bool showReceiveForm = false;
 
   final _addressController = TextEditingController();
   final _amountController = TextEditingController();
+
+  final _addressFocusNode = FocusNode();
+  final _amountFocusNode = FocusNode();
+
+  // Управление состоянием видимости клавиатуры
+  bool isKeyboardVisible = false;
 
   bool isTransactionComplete = false;
   bool isNextButtonEnabled = false;
@@ -31,9 +37,20 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _addressFocusNode.dispose();
+    _amountFocusNode.dispose();
     _addressController.dispose();
     _amountController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
+    setState(() {
+      isKeyboardVisible = bottomInset > 0;
+    });
   }
 
   void _startReceive() {
@@ -46,6 +63,7 @@ class _MainScreenState extends State<MainScreen> {
         _addressController.text = 'etwet4w3t4WEgerzerg343t434g543t4g34g334g';
       }
     });
+    FocusScope.of(context).unfocus();
   }
 
   void _cancelReceive() {
@@ -74,6 +92,7 @@ class _MainScreenState extends State<MainScreen> {
       _amountController.clear();
       isNextButtonEnabled = false;
     });
+    FocusScope.of(context).unfocus();
   }
 
   void _nextStep() {
@@ -107,6 +126,7 @@ class _MainScreenState extends State<MainScreen> {
       showSendForm = false;
       showAmountInput = false;
     });
+    FocusScope.of(context).unfocus();
   }
 
   void _onInputChanged(String value) {
@@ -115,10 +135,21 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  void _keyboardVisibilityListener() {
+    final keyboardIsVisible =
+        _addressFocusNode.hasFocus || _amountFocusNode.hasFocus;
+    if (keyboardIsVisible != isKeyboardVisible) {
+      setState(() {
+        isKeyboardVisible = keyboardIsVisible;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    // AuthStorage.setLoggedIn(true); // Только здесь сохраняем вход
+    WidgetsBinding.instance.addObserver(this);
+    AuthStorage.setLoggedIn(true);
   }
 
   @override
@@ -455,6 +486,7 @@ class _MainScreenState extends State<MainScreen> {
             style: _pasteButtonStyle,
             child: Text('Paste', style: theme.textTheme.titleMedium),
           ),
+          focusNode: _addressFocusNode,
         ),
         const SizedBox(height: 18),
         if (showAmountInput)
@@ -500,15 +532,15 @@ class _MainScreenState extends State<MainScreen> {
                       fillColor: AppColors.whiteColor,
                     ),
                     onChanged: _onInputChanged,
+                    focusNode: _amountFocusNode,
                   ),
                 ),
-                // Текст DOGE, который всегда будет находиться рядом с TextField
                 Padding(
                   padding: const EdgeInsets.only(left: 10),
                   child: Text(
                     'DOGE',
                     style: const TextStyle(
-                      color: AppColors.secondaryColor, // Цвет текста
+                      color: AppColors.secondaryColor,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -553,6 +585,7 @@ class _MainScreenState extends State<MainScreen> {
     Widget? suffix,
     String hintText = 'Enter address',
     List<TextInputFormatter>? inputFormatter,
+    required FocusNode focusNode,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -598,7 +631,12 @@ class _MainScreenState extends State<MainScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Recent transactions:'),
+        Text(
+          'Recent transactions:',
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: AppColors.whiteColor,
+          ),
+        ),
         SizedBox(height: 9),
         Container(
           width: double.infinity,
