@@ -52,11 +52,10 @@ class _RecoverWalletState extends State<RecoverWallet> {
     elevation: 0,
     padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
   ).copyWith(
-    overlayColor: WidgetStateProperty.resolveWith<Color?>(
-      (states) =>
-          states.contains(WidgetState.pressed)
-              ? AppColors.overlayButtonColor
-              : null,
+    overlayColor: WidgetStateProperty.resolveWith<Color?>((
+      states) => states.contains(WidgetState.pressed)
+          ? AppColors.overlayButtonColor
+          : null,
     ),
   );
 
@@ -82,7 +81,6 @@ class _RecoverWalletState extends State<RecoverWallet> {
     super.dispose();
   }
 
-  //для проверки фразы и перехода
   void _onLoginPressed() {
     if (_phraseController.text == _validPhrase) {
       Navigator.pushNamed(context, '/main');
@@ -110,111 +108,137 @@ class _RecoverWalletState extends State<RecoverWallet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Scaffold(
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              LogoImage(height: 200),
-              Container(
-                padding: const EdgeInsets.only(top: 22, bottom: 80),
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: AppColors.darkYellowColor,
-                  border: Border(
-                    top: BorderSide(width: 1.5, color: AppColors.whiteColor),
-                  ),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+    final viewInsets = MediaQuery.of(context).viewInsets;
+    final isKeyboardOpen = viewInsets.bottom > 0; // Check if keyboard is open
+
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Stack(
+          children: [
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final content = Column(
                   children: [
-                    Text(
-                      'Login in Dogecoin wallet',
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    Text(
-                      textAlign: TextAlign.center,
-                      'Log in to your account using\nyour mnemonic phrase',
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        color: AppColors.yellowTextColor,
-                      ),
-                    ),
-                    const SizedBox(height: 18),
-                    SizedBox(
-                      width: 326,
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Enter a phrase of 12 words or 24 words',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: Colors.white,
+                    LogoImage(height: 200),
+                    Container(
+                      padding: const EdgeInsets.only(top: 22, bottom: 80),
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        color: AppColors.darkYellowColor,
+                        border: Border(
+                          top: BorderSide(
+                            width: 1.5,
+                            color: AppColors.whiteColor,
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      width: 326,
-                      child: Stack(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Container(
-                            decoration: const BoxDecoration(
+                          Text(
+                            'Login in Dogecoin wallet',
+                            style: theme.textTheme.headlineMedium?.copyWith(
                               color: Colors.white,
                             ),
-                            child: TextField(
-                              controller: _phraseController,
-                              maxLines: 4,
-                              style: theme.textTheme.bodyLarge?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                              decoration: const InputDecoration(
-                                hintText: 'Enter mnemonic phrase',
-                                hintStyle: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                contentPadding: EdgeInsets.all(12),
-                                border: InputBorder.none,
-                              ),
-                              onChanged: _onPhraseChanged, // Listen for changes
+                          ),
+                          const SizedBox(height: 15),
+                          Text(
+                            textAlign: TextAlign.center,
+                            'Log in to your account using\nyour mnemonic phrase',
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              color: AppColors.yellowTextColor,
                             ),
                           ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: TextButton(
-                              onPressed: _pasteFromClipboard,
-                              style: pasteButtonStyle,
+                          const SizedBox(height: 18),
+                          SizedBox(
+                            width: 326,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
                               child: Text(
-                                'Paste',
-                                style: theme.textTheme.titleMedium,
+                                'Enter a phrase of 12 words or 24 words',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: Colors.white,
+                                ),
                               ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            width: 326,
+                            child: Stack(
+                              children: [
+                                Container(
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                  child: TextField(
+                                    controller: _phraseController,
+                                    maxLines: 4,
+                                    style: theme.textTheme.bodyLarge?.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                    decoration: const InputDecoration(
+                                      hintText: 'Enter mnemonic phrase',
+                                      hintStyle: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                      contentPadding: EdgeInsets.all(12),
+                                      border: InputBorder.none,
+                                    ),
+                                    onChanged: _onPhraseChanged,
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: TextButton(
+                                    onPressed: _pasteFromClipboard,
+                                    style: pasteButtonStyle,
+                                    child: Text(
+                                      'Paste',
+                                      style: theme.textTheme.titleMedium,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 13),
+                          SizedBox(
+                            width: 326,
+                            child: CustomActionButton(
+                              text: 'Login now',
+                              enabled: _termsAccepted,
+                              onPressed: _onLoginPressed,
+                              activeStyle: activeButtonStyle,
+                              disabledStyle: disableButtonStyle,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 13),
-                    SizedBox(
-                      width: 326,
-                      child: CustomActionButton(
-                        text: 'Login now',
-                        enabled: _termsAccepted,
-                        onPressed: _onLoginPressed,
-                        activeStyle: activeButtonStyle,
-                        disabledStyle: disableButtonStyle,
-                      ),
-                    ),
                   ],
-                ),
-              ),
-            ],
-          ),
-          ArrowBack(),
-        ],
+                );
+
+                return isKeyboardOpen
+                    ? SingleChildScrollView(
+                        padding: EdgeInsets.only(bottom: viewInsets.bottom + 20),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: constraints.maxHeight,
+                          ),
+                          child: content,
+                        ),
+                      )
+                    : content;
+              },
+            ),
+            const ArrowBack(),
+          ],
+        ),
       ),
     );
   }

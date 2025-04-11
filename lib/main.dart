@@ -13,22 +13,12 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  final prefs = await SharedPreferences.getInstance();
+  // WidgetsFlutterBinding.ensureInitialized();
+  // final isLoggedIn = await AuthStorage.isLoggedIn();
 
-  final wasOpenedBefore = prefs.getBool('wasOpenedBefore') ?? false;
-  final savedRoute = prefs.getString('last_route');
+  // final initialRoute = isLoggedIn ? '/main' : '/welcome';
 
-  String initialRoute;
-
-  if (wasOpenedBefore && savedRoute != null) {
-    initialRoute = savedRoute;
-  } else {
-    initialRoute = '/welcome'; // Или другой стартовый экран
-    await prefs.setBool('wasOpenedBefore', true);
-  }
-
-  runApp(DogecoinApp(initialRoute: '/load'));
+  runApp(DogecoinApp(initialRoute: '/recover_wallet'));  // initialRoute: initialRoute
 }
 
 class DogecoinApp extends StatelessWidget {
@@ -54,5 +44,24 @@ class DogecoinApp extends StatelessWidget {
         '/settings': (context) => SettingsScreen(),
       },
     );
+  }
+}
+
+class AuthStorage {
+  static const _keyIsLoggedIn = 'is_logged_in';
+
+  static Future<void> setLoggedIn(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_keyIsLoggedIn, value);
+  }
+
+  static Future<bool> isLoggedIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_keyIsLoggedIn) ?? false;
+  }
+
+  static Future<void> reset() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_keyIsLoggedIn);
   }
 }
